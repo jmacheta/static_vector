@@ -14,8 +14,8 @@ build:
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
-  # before_script:
-  #   - apt update && apt -y install ninja cmake
+  before_script:
+    - apt update && apt -y install ninja cmake
   script:
     - cmake -G "Ninja" -B buid
     - cmake --build build --target all
