@@ -17,7 +17,7 @@ build:
   before_script:
     - apt update && apt -y install ninja-build cmake
   script:
-    - cmake -G "Ninja" -B buid
+    - cmake -G "Ninja" -B build
     - cmake --build build --target all
   # artifacts:
     # paths:
