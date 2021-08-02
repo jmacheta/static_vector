@@ -1,3 +1,7 @@
+stages:
+  - build
+  - test
+
 image: gcc
 
 build:
@@ -9,10 +13,6 @@ build:
   script:
     - cmake -G "Ninja" -B build
     - cmake --build build --target all
-  artifacts:
-    paths:
-      - build/ecpp_static_vector_ut
-      # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
   cache:
       paths:
         - build/
@@ -20,7 +20,5 @@ build:
 # run tests using the binary built before
 test:
   stage: test
-  before_script:
-    - apt update && apt -y install cmake
   script:
     - ctest --output-on-failure --test-dir build
