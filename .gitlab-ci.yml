@@ -1,13 +1,11 @@
 stages:
-  - build
   - test
 
 image: gcc
 
-build:
-  stage: build
-  # instead of calling g++ directly you can also use some build toolkit like make
-  # install the necessary build tools when needed
+# run tests using the binary built before
+test:
+  stage: test
   before_script:
     - apt update && apt -y install ninja-build cmake
   script:
@@ -16,11 +14,3 @@ build:
   cache:
       paths:
         - build/
-
-# run tests using the binary built before
-test:
-  stage: test
-  before_script:
-    - apt update && apt -y install ninja-build cmake
-  script:
-    - ctest --output-on-failure --test-dir build
