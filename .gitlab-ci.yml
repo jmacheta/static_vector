@@ -11,7 +11,7 @@
 image: gcc
 
 build:
-  stage: build
+  stage: build and test
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
@@ -19,18 +19,11 @@ build:
   script:
     - cmake -G "Ninja" -B build
     - cmake --build build --target all
-  # artifacts:
-    # paths:
+
+  artifacts:
+    paths:
       # - mybinary
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
-      # cache:
-      #   paths:
-      #     - "*.o"
-
-# run tests using the binary built before
-test:
-  stage: test
-  before_script:
-    - apt update && apt -y install cmake
-  script:
-    - ctest --output-on-failure --test-dir build
+      cache:
+        paths:
+          - "*.o"
