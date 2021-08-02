@@ -20,5 +20,7 @@ build:
 # run tests using the binary built before
 test:
   stage: test
+  before_script:
+    - apt update && apt -y install ninja-build cmake
   script:
     - ctest --output-on-failure --test-dir build
