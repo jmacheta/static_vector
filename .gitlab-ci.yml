@@ -9,8 +9,12 @@ test:
   before_script:
     - apt update && apt -y install ninja-build cmake
   script:
-    - cmake -G "Ninja" -B build
-    - cmake --build build --target all
+    - cmake -G "Ninja" -B build_exceptions_on
+    - cmake -E env CXXFLAGS="-fno-exceptions" cmake -G "Ninja" -B build_exceptions_off
+    - cmake --build build_exceptions_on --target all
+    - cmake --build build_exceptions_off --target all
   cache:
       paths:
-        - build/
+        - build_exceptions_on/
+        - build_exceptions_off/
+

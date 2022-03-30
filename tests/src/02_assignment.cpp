@@ -81,15 +81,15 @@ TEST(ecpp_static_vector, assignment_with_operator_from_initializer_list) {
     EXPECT_TRUE(std::equal(temp2.begin(), temp2.end(), iList.begin(), iList.end()));
 
 
-#ifndef ECPP_NOEXCEPT
     auto tryAssignToLargeList = []() {
         auto                               iListTooBig = initializer_sequence<int, Capacity + 1>()();
         ecpp::static_vector<int, Capacity> _;
         _ = iListTooBig;
     };
+#ifdef __cpp_exceptions
     EXPECT_THROW(tryAssignToLargeList(), std::length_error);
 #else
-
+    EXPECT_DEATH(tryAssignToLargeList(), "");
 #endif
 }
 
@@ -113,14 +113,15 @@ TEST(ecpp_static_vector, assignment_with_assign_count_copies) {
     EXPECT_EQ(temp2.size(), Capacity);
     EXPECT_EQ(std::count(temp2.begin(), temp2.end(), 1), Capacity);
 
-#ifndef ECPP_NOEXCEPT
+
     auto tryAssignToLargeList = []() {
         ecpp::static_vector<int, Capacity> _;
         _.assign(Capacity + 1, 1);
     };
+#ifdef __cpp_exceptions
     EXPECT_THROW(tryAssignToLargeList(), std::length_error);
 #else
-
+    EXPECT_DEATH(tryAssignToLargeList(), "");
 #endif
 }
 
@@ -147,16 +148,17 @@ TEST(ecpp_static_vector, assignment_with_assign_from_range) {
     EXPECT_EQ(temp_dst2.size(), Capacity);
     EXPECT_TRUE(std::equal(temp_dst2.begin(), temp_dst2.end(), temp_src.begin(), temp_src.end()));
 
-#ifndef ECPP_NOEXCEPT
+
     auto tryAssignToLargeRange = []() {
         auto                               iListTooLarge = initializer_sequence<int, Capacity + 1>()();
         std::vector<int>                   temp_src(iListTooLarge);
         ecpp::static_vector<int, Capacity> _;
         _.assign(temp_src.begin(), temp_src.end());
     };
+#ifdef __cpp_exceptions
     EXPECT_THROW(tryAssignToLargeRange(), std::length_error);
 #else
-
+    EXPECT_DEATH(tryAssignToLargeRange(), "");
 #endif
 }
 
@@ -183,14 +185,14 @@ TEST(ecpp_static_vector, assignment_with_assign_from_initializer_list) {
     EXPECT_TRUE(std::equal(temp2.begin(), temp2.end(), iList.begin(), iList.end()));
 
 
-#ifndef ECPP_NOEXCEPT
     auto tryAssignToLargeList = []() {
         auto                               iListTooBig = initializer_sequence<int, Capacity + 1>()();
         ecpp::static_vector<int, Capacity> _;
         _.assign(iListTooBig);
     };
+#ifdef __cpp_exceptions
     EXPECT_THROW(tryAssignToLargeList(), std::length_error);
 #else
-
+    EXPECT_DEATH(tryAssignToLargeList(), "");
 #endif
 }

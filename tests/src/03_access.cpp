@@ -27,13 +27,13 @@ TEST(ecpp_static_vector, access_at) {
         EXPECT_EQ(std::data(iList)[i], vC);
     }
 
-    
 
-#ifndef ECPP_NOEXCEPT
+#ifdef __cpp_exceptions
     EXPECT_THROW(temp.at(Capacity), std::out_of_range);
     EXPECT_THROW(tempC.at(Capacity), std::out_of_range);
 #else
-
+    EXPECT_DEATH(temp.at(Capacity), "");
+    EXPECT_DEATH(tempC.at(Capacity), "");
 #endif
 }
 
@@ -60,12 +60,12 @@ TEST(ecpp_static_vector, access_front) {
     auto iList = initializer_sequence<int, Capacity>()();
 
     ecpp::static_vector<int, Capacity> temp(iList);
-    auto& v = temp.front();
+    auto&                              v = temp.front();
     EXPECT_EQ(0, v);
 
 
     ecpp::static_vector<int, Capacity> const tempC(iList);
-    auto const& vC = temp.front();
+    auto const&                              vC = temp.front();
     EXPECT_EQ(0, vC);
 }
 
@@ -74,7 +74,7 @@ TEST(ecpp_static_vector, access_back) {
     auto iList = initializer_sequence<int, Capacity>()();
 
     ecpp::static_vector<int, Capacity> temp(iList);
-    auto& v = temp.back();
+    auto&                              v = temp.back();
     EXPECT_EQ(Capacity - 1, v);
 
 
@@ -89,7 +89,7 @@ TEST(ecpp_static_vector, access_data) {
     auto iList = initializer_sequence<int, Capacity>()();
 
     ecpp::static_vector<int, Capacity> temp(iList);
-    auto data = temp.data();
+    auto                               data = temp.data();
     for (std::size_t i = 0; i != Capacity; ++i) {
         EXPECT_EQ(&temp[i], data + i);
     }

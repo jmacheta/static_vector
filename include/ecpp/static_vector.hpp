@@ -9,29 +9,14 @@
 #include <memory>
 #include <type_traits>
 
+#ifdef __cpp_exceptions
+#    include <exception>
+#    define ECPP_STATIC_VECTOR_THROW(x) throw(x)
+#else
+#    define ECPP_STATIC_VECTOR_THROW(x) std::abort();
+#endif
 
 namespace ecpp {
-    // Runtime errors used by static_vector, depending on error handling strategy
-    namespace static_vector_error {
-#ifndef ECPP_NOEXCEPT
-        template<class T> class RuntimeError {
-          public:
-            /**
-             * @brief Equivalent to throwing exception
-             * @param what error context
-             */
-            [[noreturn]] constexpr static void raise(char const* what) {
-                throw T(what);
-            }
-        };
-
-        using LengthError     = RuntimeError<std::length_error>; ///< Wrapper for std::length_error
-        using OutOfRangeError = RuntimeError<std::out_of_range>; ///< Wrapper for std::out_of_range
-#else
-        using LengthError     = RuntimeError; ///< Equivalent of std::length_error without exceptions usage
-        using OutOfRangeError = RuntimeError; ///< Equivalent of std::out_of_range without exceptions usage
-#endif
-    } // namespace static_vector_error
 
 
     /**
@@ -76,7 +61,7 @@ namespace ecpp {
          */
         constexpr static_vector(size_type count, const_reference value) : currentSize(count) {
             if (count > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             std::uninitialized_fill_n(begin(), count, value);
         }
@@ -88,7 +73,7 @@ namespace ecpp {
          */
         constexpr explicit static_vector(size_type count) : currentSize(count) {
             if (count > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             std::uninitialized_default_construct_n(begin(), count);
         }
@@ -103,7 +88,7 @@ namespace ecpp {
             auto const dist  = std::distance(first, last);
             auto const count = size_type(dist);
             if (dist < 0 || count > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             currentSize = count;
             std::uninitialized_copy(first, last, begin());
@@ -187,7 +172,7 @@ namespace ecpp {
                 clear();
             }
             if (ilist.size() > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             currentSize = ilist.size();
             std::uninitialized_copy(ilist.begin(), ilist.end(), begin());
@@ -205,7 +190,7 @@ namespace ecpp {
                 clear();
             }
             if (count > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             std::uninitialized_fill_n(begin(), count, value);
             currentSize = count;
@@ -226,7 +211,7 @@ namespace ecpp {
             auto const dist  = std::distance(first, last);
             auto const count = size_type(dist);
             if (dist < 0 || count > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             currentSize = count;
             std::uninitialized_copy(first, last, begin());
@@ -249,7 +234,7 @@ namespace ecpp {
          */
         constexpr reference at(size_type pos) {
             if (pos >= size()) {
-                static_vector_error::OutOfRangeError::raise("Index out of bounds");
+                ECPP_STATIC_VECTOR_THROW(std::out_of_range("Index out of bounds"));
             }
             return (*this)[pos];
         }
@@ -262,7 +247,7 @@ namespace ecpp {
          */
         constexpr const_reference at(size_type pos) const {
             if (pos >= size()) {
-                static_vector_error::OutOfRangeError::raise("Index out of bounds");
+                ECPP_STATIC_VECTOR_THROW(std::out_of_range("Index out of bounds"));
             }
             return (*this)[pos];
         }
@@ -484,7 +469,7 @@ namespace ecpp {
          */
         constexpr void reserve(size_type new_cap) {
             if (new_cap > max_size()) {
-                static_vector_error::LengthError::raise("Reserve exceeds max_size");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Reserve exceeds max_size"));
             }
         }
 
@@ -523,7 +508,7 @@ namespace ecpp {
          */
         constexpr iterator insert(const_iterator pos, T const& value) {
             if (size() + 1 > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             auto const position = begin() + std::distance(cbegin(), pos);
             // Move last element right by one (end() + 1 will become new end(), so uninitialized memory need to be initialized)
@@ -546,7 +531,7 @@ namespace ecpp {
          */
         constexpr iterator insert(const_iterator pos, T&& value) {
             if (size() + 1 > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             auto const position = begin() + std::distance(cbegin(), pos);
             // Move last element right by one (end() + 1 will become new end(), so uninitialized memory need to be initialized)
@@ -570,7 +555,7 @@ namespace ecpp {
          */
         constexpr iterator insert(const_iterator pos, size_type count, T const& value) {
             if (size() + count > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             auto const position = begin() + std::distance(cbegin(), pos);
             if (count > 0) {
@@ -609,7 +594,7 @@ namespace ecpp {
             auto const dist  = std::distance(first, last);
             auto const count = size_type(dist);
             if (dist < 0 || (size() + count > max_size())) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             auto const position = begin() + std::distance(cbegin(), pos);
             if (position != end()) {
@@ -654,7 +639,7 @@ namespace ecpp {
          */
         template<class... Args> constexpr iterator emplace(const_iterator pos, Args&&... args) {
             if (size() + 1 > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
             auto const position = begin() + std::distance(cbegin(), pos);
             // Move last element right by one (end() + 1 will become new end(), so uninitialized memory need to be initialized)
@@ -756,7 +741,7 @@ namespace ecpp {
             if (count < size()) {
                 erase(begin() + count, end());
             } else if (count > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             } else {
                 auto const toAdd = count - size();
                 for (size_type i = 0; i != toAdd; ++i) {
@@ -777,7 +762,7 @@ namespace ecpp {
             if (count < size()) {
                 erase(begin() + count, end());
             } else if (count > max_size()) {
-                static_vector_error::LengthError::raise("Insertion would exceed static_vector capacity");
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             } else {
                 auto const toAdd = count - size();
                 for (size_type i = 0; i != toAdd; ++i) {

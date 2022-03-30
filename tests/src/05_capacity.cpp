@@ -72,7 +72,11 @@ TEST(ecpp_static_vector, capacity_reserve) {
     EXPECT_EQ(temp1.max_size(), Capacity);
     EXPECT_EQ(temp1.capacity(), Capacity);
 
+#ifdef __cpp_exceptions
     EXPECT_THROW(temp1.reserve(Capacity + 1), std::length_error);
+#else
+    EXPECT_DEATH(temp1.reserve(Capacity + 1), "");
+#endif
 }
 
 

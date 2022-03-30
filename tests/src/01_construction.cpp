@@ -27,11 +27,11 @@ TEST(ecpp_static_vector, construction_with_count_copies) {
         EXPECT_EQ(i, -1);
     }
 
-#ifndef ECPP_NOEXCEPT
     auto tryConstructInvalidVector = []() { ecpp::static_vector<int, Capacity> _(Capacity + 1, {42}); };
+#ifdef __cpp_exceptions
     EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
 #else
-
+    EXPECT_DEATH(tryConstructInvalidVector(), "");
 #endif
 }
 
@@ -41,11 +41,12 @@ TEST(ecpp_static_vector, construction_with_count_default_inserted_instances) {
     EXPECT_EQ(temp.max_size(), Capacity);
     EXPECT_EQ(temp.capacity(), Capacity);
     EXPECT_EQ(temp.size(), Capacity);
-#ifndef ECPP_NOEXCEPT
+
     auto tryConstructInvalidVector = []() { ecpp::static_vector<int, Capacity> _(Capacity + 1); };
+#ifdef __cpp_exceptions
     EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
 #else
-
+    EXPECT_DEATH(tryConstructInvalidVector(), "");
 #endif
 }
 
@@ -62,15 +63,16 @@ TEST(ecpp_static_vector, construction_from_range) {
 
     EXPECT_TRUE(std::equal(temp_src.begin(), temp_src.end(), temp_dst.begin(), temp_dst.end()));
 
-#ifndef ECPP_NOEXCEPT
+
     auto tryConstructInvalidVector = []() {
         auto                               iListTooBig = initializer_sequence<int, Capacity + 1>()();
         std::vector<int>                   temp_src(iListTooBig);
         ecpp::static_vector<int, Capacity> _(temp_src.begin(), temp_src.end());
     };
+#ifdef __cpp_exceptions
     EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
 #else
-
+    EXPECT_DEATH(tryConstructInvalidVector(), "");
 #endif
 }
 
@@ -115,13 +117,13 @@ TEST(ecpp_static_vector, construction_from_initializer_list) {
     EXPECT_TRUE(std::equal(temp.begin(), temp.end(), iList.begin(), iList.end()));
 
 
-#ifndef ECPP_NOEXCEPT
     auto tryConstructInvalidVector = []() {
         auto                               iListTooBig = initializer_sequence<int, Capacity + 1>()();
         ecpp::static_vector<int, Capacity> _(iListTooBig);
     };
+#ifdef __cpp_exceptions
     EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
 #else
-
+    EXPECT_DEATH(tryConstructInvalidVector(), "");
 #endif
 }

@@ -72,11 +72,12 @@ TEST(ecpp_static_vector, modifier_insert_copy_single) {
     }
     EXPECT_EQ(temp.size(), temp.max_size());
 
-#ifndef ECPP_NOEXCEPT
+#ifdef __cpp_exceptions
     EXPECT_THROW(temp.insert(temp.end(), x), std::length_error);
     EXPECT_THROW(temp.insert(temp.begin(), x), std::length_error);
 #else
-
+    EXPECT_DEATH(temp.insert(temp.end(), x), "");
+    EXPECT_DEATH(temp.insert(temp.begin(), x), "");
 #endif
 }
 
