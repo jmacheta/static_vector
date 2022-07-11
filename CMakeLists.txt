@@ -1,14 +1,13 @@
-
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.21)
 
 project(ecpp_static_vector)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CXX_STANDARD_REQUIRED ON)
+option(ECPP_BUILD_TESTS "Forces building test cases" OFF)
 
 add_library(ecpp_static_vector INTERFACE)
 target_include_directories(ecpp_static_vector INTERFACE include)
+target_compile_features(ecpp_static_vector INTERFACE cxx_std_20)
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    add_subdirectory(tests)
-endif()
+if (PROJECT_IS_TOP_LEVEL OR ECPP_BUILD_TESTS)
+  add_subdirectory(tests)
+endif ()
