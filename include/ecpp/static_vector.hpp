@@ -85,8 +85,8 @@ namespace ecpp {
          * @note The method will throw LengthError if std::distance(first, last) is negative or, greater than max_size()
          */
         template<class InputIt> constexpr static_vector(InputIt first, InputIt last) {
-            auto const dist  = std::distance(first, last);
-            auto const count = size_type(dist);
+            auto dist  = std::distance(first, last);
+            auto count = size_type(dist);
             if (dist < 0 || count > max_size()) {
                 ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
@@ -208,8 +208,8 @@ namespace ecpp {
                 clear();
             }
 
-            auto const dist  = std::distance(first, last);
-            auto const count = size_type(dist);
+            auto dist  = std::distance(first, last);
+            auto count = size_type(dist);
             if (dist < 0 || count > max_size()) {
                 ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
@@ -510,7 +510,7 @@ namespace ecpp {
             if (size() + 1 > max_size()) {
                 ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
-            auto const position = begin() + std::distance(cbegin(), pos);
+            auto position = begin() + std::distance(cbegin(), pos);
             // Move last element right by one (end() + 1 will become new end(), so uninitialized memory need to be initialized)
             if (position != end()) {
                 std::uninitialized_move(end() - 1, end(), end());
@@ -533,7 +533,7 @@ namespace ecpp {
             if (size() + 1 > max_size()) {
                 ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
-            auto const position = begin() + std::distance(cbegin(), pos);
+            auto position = begin() + std::distance(cbegin(), pos);
             // Move last element right by one (end() + 1 will become new end(), so uninitialized memory need to be initialized)
             if (position != end()) {
                 std::uninitialized_move(end() - 1, end(), end());
@@ -557,12 +557,12 @@ namespace ecpp {
             if (size() + count > max_size()) {
                 ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
-            auto const position = begin() + std::distance(cbegin(), pos);
+            auto position = begin() + std::distance(cbegin(), pos);
             if (count > 0) {
                 if (position != end()) {
-                    auto const existingElementsToMove = std::distance(position, end()); // Negative distance in this context is UB (position must be in range [begin(), end()])
-                    auto const toCopyAtTheEnd         = (count >= existingElementsToMove) ? (count - existingElementsToMove) : 0;
-                    auto const toMoveAssign           = (count >= existingElementsToMove) ? 0 : (existingElementsToMove - count);
+                    auto existingElementsToMove = std::distance(position, end()); // Negative distance in this context is UB (position must be in range [begin(), end()])
+                    auto toCopyAtTheEnd         = (count >= existingElementsToMove) ? (count - existingElementsToMove) : 0;
+                    auto toMoveAssign           = (count >= existingElementsToMove) ? 0 : (existingElementsToMove - count);
 
                     // uninitialized_copy last toCopyAtTheEnd elements of input range at the end(), as they don't overlap with existing data
                     auto lastElem = std::uninitialized_fill_n(end(), toCopyAtTheEnd, value);
@@ -591,16 +591,16 @@ namespace ecpp {
          * @note The method will throw LengthError if size() + count > max_size()
          */
         template<class InputIt> constexpr iterator insert(const_iterator pos, InputIt first, InputIt last) {
-            auto const dist  = std::distance(first, last);
-            auto const count = size_type(dist);
+            auto dist  = std::distance(first, last);
+            auto count = size_type(dist);
             if (dist < 0 || (size() + count > max_size())) {
                 ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             }
-            auto const position = begin() + std::distance(cbegin(), pos);
+            auto position = begin() + std::distance(cbegin(), pos);
             if (position != end()) {
-                auto const existingElementsToMove = std::distance(position, end()); // Negative distance in this context is UB (position must be in range [begin(), end()])
-                auto const toCopyAtTheEnd         = (dist >= existingElementsToMove) ? (dist - existingElementsToMove) : 0;
-                auto const toMoveAssign           = (dist >= existingElementsToMove) ? 0 : (existingElementsToMove - dist);
+                auto existingElementsToMove = std::distance(position, end()); // Negative distance in this context is UB (position must be in range [begin(), end()])
+                auto toCopyAtTheEnd         = (dist >= existingElementsToMove) ? (dist - existingElementsToMove) : 0;
+                auto toMoveAssign           = (dist >= existingElementsToMove) ? 0 : (existingElementsToMove - dist);
 
                 // uninitialized_copy last toCopyAtTheEnd elements of input range at the end(), as they don't overlap with existing data
                 auto lastElem = std::uninitialized_copy(last - toCopyAtTheEnd, last, end());
@@ -661,7 +661,7 @@ namespace ecpp {
          * @note If pos refers to the last element, then the end() iterator is returned
          */
         constexpr iterator erase(const_iterator pos) {
-            auto const index = std::distance(cbegin(), pos);
+            auto index = std::distance(cbegin(), pos);
             std::move(begin() + index + 1, end(), begin() + index);
             // Elements were moved left, now destroy the last element
             currentSize--;
@@ -679,13 +679,13 @@ namespace ecpp {
          * @note If [first, last) is an empty range, then last is returned
          */
         constexpr iterator erase(const_iterator first, const_iterator last) {
-            auto const last_ = begin() + std::distance(cbegin(), last);
+            auto last_ = begin() + std::distance(cbegin(), last);
             if (first >= last)
                 return last_;
-            auto const first_ = begin() + std::distance(cbegin(), first);
+            auto first_ = begin() + std::distance(cbegin(), first);
 
-            auto const toErase   = std::distance(first, last); // Guaranteed to be > 0
-            auto       lastValid = std::move(first_ + toErase, end(), first_);
+            auto toErase   = std::distance(first, last); // Guaranteed to be > 0
+            auto lastValid = std::move(first_ + toErase, end(), first_);
             std::for_each(lastValid, end(), [](reference x) { std::destroy_at(&x); });
 
             currentSize -= size_type(toErase);
@@ -743,7 +743,7 @@ namespace ecpp {
             } else if (count > max_size()) {
                 ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             } else {
-                auto const toAdd = count - size();
+                auto toAdd = count - size();
                 for (size_type i = 0; i != toAdd; ++i) {
                     emplace_back();
                 }
@@ -764,7 +764,7 @@ namespace ecpp {
             } else if (count > max_size()) {
                 ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
             } else {
-                auto const toAdd = count - size();
+                auto toAdd = count - size();
                 for (size_type i = 0; i != toAdd; ++i) {
                     push_back(value);
                 }
@@ -822,8 +822,8 @@ namespace ecpp {
      * @return The number of erased elements
      */
     template<typename T, std::size_t N, typename U> constexpr typename static_vector<T, N>::size_type erase(static_vector<T, N>& c, U const& value) {
-        auto const oldSize = c.size();
-        auto const end     = std::remove(c.begin(), c.end(), value);
+        auto oldSize = c.size();
+        auto end     = std::remove(c.begin(), c.end(), value);
         c.erase(end, c.end());
         return c.size() - oldSize;
     }
@@ -835,8 +835,8 @@ namespace ecpp {
      * @return The number of erased elements
      */
     template<typename T, std::size_t N, typename Pred> constexpr typename static_vector<T, N>::size_type erase_if(static_vector<T, N>& c, Pred pred) {
-        auto const oldSize = c.size();
-        auto const end     = std::remove_if(c.begin(), c.end(), pred);
+        auto oldSize = c.size();
+        auto end     = std::remove_if(c.begin(), c.end(), pred);
         c.erase(end, c.end());
         return c.size() - oldSize;
     }
