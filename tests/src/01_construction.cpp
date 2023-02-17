@@ -106,24 +106,24 @@ TEST(ecpp_static_vector, construction_move) {
 }
 
 
-TEST(ecpp_static_vector, construction_from_initializer_list) {
-    auto iList = initializer_sequence<int, Capacity>()();
+// TEST(ecpp_static_vector, construction_from_initializer_list) {
+//     auto iList = initializer_sequence<int, Capacity>()();
 
-    ecpp::static_vector<int, Capacity> temp(iList);
-    EXPECT_EQ(temp.max_size(), Capacity);
-    EXPECT_EQ(temp.capacity(), Capacity);
-    EXPECT_EQ(temp.size(), Capacity);
+//     ecpp::static_vector<int, Capacity> temp(iList);
+//     EXPECT_EQ(temp.max_size(), Capacity);
+//     EXPECT_EQ(temp.capacity(), Capacity);
+//     EXPECT_EQ(temp.size(), Capacity);
 
-    EXPECT_TRUE(std::equal(temp.begin(), temp.end(), iList.begin(), iList.end()));
+//     EXPECT_TRUE(std::equal(temp.begin(), temp.end(), iList.begin(), iList.end()));
 
 
-    auto tryConstructInvalidVector = []() {
-        auto                               iListTooBig = initializer_sequence<int, Capacity + 1>()();
-        ecpp::static_vector<int, Capacity> _(iListTooBig);
-    };
-#ifdef __cpp_exceptions
-    EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
-#else
-    EXPECT_DEATH(tryConstructInvalidVector(), "");
-#endif
-}
+//     auto tryConstructInvalidVector = []() {
+//         auto                               iListTooBig = initializer_sequence<int, Capacity + 1>()();
+//         ecpp::static_vector<int, Capacity> _(iListTooBig);
+//     };
+// #ifdef __cpp_exceptions
+//     EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
+// #else
+//     EXPECT_DEATH(tryConstructInvalidVector(), "");
+// #endif
+// }

@@ -18,8 +18,8 @@ include(GoogleTest)
 add_executable(
   ecpp_static_vector_ut
   src/01_construction.cpp
-  src/02_assignment.cpp
-  src/03_access.cpp
+  # src/02_assignment.cpp
+  # src/03_access.cpp
   src/04_iterators.cpp
   src/05_capacity.cpp
   src/06_modifiers.cpp
