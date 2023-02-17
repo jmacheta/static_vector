@@ -9,5 +9,6 @@ target_include_directories(ecpp_static_vector INTERFACE include)
 target_compile_features(ecpp_static_vector INTERFACE cxx_std_20)
 
 if (PROJECT_IS_TOP_LEVEL OR ECPP_BUILD_TESTS)
+  enable_testing()
   add_subdirectory(tests)
 endif ()
