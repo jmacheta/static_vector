@@ -698,7 +698,11 @@ namespace ecpp {
          * @note The method will throw LengthError if size() == max_size()
          */
         constexpr void push_back(T const& value) {
-            (void)insert(end(), value);
+            if (size() + 1 > max_size()) {
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
+            }
+            std::construct_at(end(), value);
+            ++currentSize;
         }
 
         /**
@@ -707,7 +711,11 @@ namespace ecpp {
          * @note The method will throw LengthError if size() == max_size()
          */
         constexpr void push_back(T&& value) {
-            (void)insert(end(), std::move(value));
+            if (size() + 1 > max_size()) {
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
+            }
+            std::construct_at(end(), std::move(value));
+            ++currentSize;
         }
 
         /**
@@ -717,7 +725,13 @@ namespace ecpp {
          * @note The method will throw LengthError if size() == max_size()
          */
         template<class... Args> constexpr reference emplace_back(Args&&... args) {
-            return *emplace(end(), std::forward<Args>(args)...);
+            if (size() + 1 > max_size()) {
+                ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
+            }
+            auto const position = end();
+            std::construct_at(position, std::forward<Args>(args)...);
+            ++currentSize;
+            return *position;
         }
 
         /**
