@@ -16,7 +16,7 @@ FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
 add_executable(
-  ecpp_static_vector_ut
+  static_vector_ut
   src/01_construction.cpp
   # src/02_assignment.cpp
   # src/03_access.cpp
@@ -26,13 +26,13 @@ add_executable(
   src/07_non_member_functions.cpp
 )
 
-target_include_directories(ecpp_static_vector_ut PUBLIC include)
-target_link_libraries(ecpp_static_vector_ut ecpp_static_vector GTest::gtest_main)
-target_link_options(ecpp_static_vector_ut PUBLIC -pthread)
+target_include_directories(static_vector_ut PUBLIC include)
+target_link_libraries(static_vector_ut static_vector GTest::gtest_main)
+target_link_options(static_vector_ut PUBLIC -pthread)
 
-gtest_discover_tests(ecpp_static_vector_ut)
+gtest_discover_tests(static_vector_ut)
 
 add_custom_command(
-  TARGET ecpp_static_vector_ut COMMENT "Run tests" POST_BUILD COMMAND ctest ARGS --output-on-failure
+  TARGET static_vector_ut COMMENT "Run tests" POST_BUILD COMMAND ctest ARGS --output-on-failure
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
