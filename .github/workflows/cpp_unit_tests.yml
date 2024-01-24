@@ -1,0 +1,31 @@
+name: C++ Unit Tests
+
+on:
+  push:
+      branches: [ main ]
+  pull_request:
+      branches: [ main ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lukka/get-cmake@latest
+        with:
+          useLocalCache: true
+      
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake --preset default
+
+      - name: Build tests
+        run: cmake --build --preset testing
+
+      - name: Test
+        run: ctest --preset testing
+
+      - name: Build release
+        run: cmake --build --preset release
+        
+
