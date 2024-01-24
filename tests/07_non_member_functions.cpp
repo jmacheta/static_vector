@@ -10,6 +10,14 @@ using namespace ecpp::testing;
 
 constexpr std::size_t Capacity{10};
 
+struct NonMovableType {
+    int value        = 0;
+    NonMovableType() = default;
+    NonMovableType(int val) : value(val){};
+    auto& operator=(NonMovableType const&) = delete;
+};
+
+
 TEST(ecpp_static_vector, non_member_equality_comparison_operator) {
     ecpp::static_vector<int, 10> r1{1, 0, 1, 0, 1, 0, 2, 2, 1, 3};
     auto                         r1c = r1;                         // Exact copy
@@ -94,4 +102,9 @@ TEST(ecpp_static_vector, non_member_erase_if) {
 
     ecpp::erase_if(before, [](auto const& i) { return i == 1 || i == 2 || i == 3; }); // Should remove remaining elements
     EXPECT_EQ(before.size(), 0);
+
+    ecpp::static_vector<NonMovableType, 100> before2{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    EXPECT_EQ(before2.size(), 10);
+    ecpp::erase_if(before, [](auto const& i) { return i == 11; }); // Should remove nothing
+    EXPECT_EQ(before2.size(), 10);
 }
