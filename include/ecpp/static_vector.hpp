@@ -71,7 +71,9 @@ public:
    * @param[in] count the size of the container
    * @note The method will throw LengthError if count > max_size()
    */
-  constexpr explicit static_vector(size_type count) : currentSize(count) {
+  constexpr explicit static_vector(size_type count)
+    requires(std::is_default_constructible_v<T>)
+      : currentSize(count) {
     if(count > max_size()) {
       ECPP_STATIC_VECTOR_THROW(std::length_error("Insertion would exceed static_vector capacity"));
     }
@@ -107,7 +109,9 @@ public:
    * empty()
    * @param[in] other another container to be used as source to initialize the elements of the container with
    */
-  constexpr static_vector(static_vector &&other) noexcept : currentSize(std::move(other.currentSize)) {
+  constexpr static_vector(static_vector &&other) noexcept
+    requires(std::movable<T>)
+      : currentSize(std::move(other.currentSize)) {
     std::uninitialized_move(other.begin(), other.end(), begin());
   }
 
