@@ -9,7 +9,7 @@ add_library(static_vector INTERFACE)
 add_library(ecpp::static_vector ALIAS static_vector)
 
 target_include_directories(
-  static_vector INTERFACE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+  static_vector INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                           $<INSTALL_INTERFACE:include>
 )
 target_compile_features(static_vector INTERFACE cxx_std_20)
