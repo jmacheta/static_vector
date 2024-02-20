@@ -25,7 +25,7 @@ jobs:
       - name: Test
         run: ctest --preset testing
 
-      - name: Build release
-        run: cmake --build --preset release
+      - name: Install
+        run: cmake --build --preset install
         
 
