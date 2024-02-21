@@ -1,6 +1,6 @@
 include(CMakePackageConfigHelpers)
 
-set(CMAKES_EXPORT_DIR cmake)
+set(CMAKES_EXPORT_DIR cmake/static_vector)
 
 write_basic_package_version_file(static_vector-config-version.cmake COMPATIBILITY SameMajorVersion)
 
