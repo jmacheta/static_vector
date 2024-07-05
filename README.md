@@ -3,6 +3,7 @@
 This package provides single-header C++20 library that defines container with std::vector interface, which uses statically_allocated storage instead of std::allocator.
 
 [![Build status](https://github.com/jmacheta/static_vector/actions/workflows/cpp_unit_tests.yml/badge.svg)](https://github.com/jmacheta/static_vector/actions/workflows/cpp_unit_tests.yml)
+
 ## Installation
 
 The easiest way is to use built-in CMake FetchContent:

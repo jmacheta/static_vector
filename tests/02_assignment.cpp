@@ -1,20 +1,21 @@
 #include "ecpp/static_vector.hpp"
 #include "initializer_list_helper.hpp"
+#include "test_types.hpp"
 
 #include <gtest/gtest.h>
 
 #include <vector>
 
 using namespace ecpp::testing;
-
+using ecpp::static_vector;
 constexpr std::size_t Capacity{10};
 
-TEST(ecpp_static_vector, assignment_with_copy_assignment_operator) {
-  auto iList = initializer_sequence<int, Capacity>()();
-  ecpp::static_vector<int, Capacity> temp_src(iList);
+TYPED_TEST(StaticVector, assignment_with_copy_assignment_operator) {
+  auto iList = initializer_sequence<TypeParam, Capacity>()();
+  static_vector<TypeParam, Capacity> temp_src(iList);
 
   // Case when destination is empty
-  ecpp::static_vector<int, Capacity> temp_dst1;
+  static_vector<TypeParam, Capacity> temp_dst1;
   EXPECT_EQ(temp_dst1.size(), 0);
 
   temp_dst1 = temp_src;
@@ -23,7 +24,7 @@ TEST(ecpp_static_vector, assignment_with_copy_assignment_operator) {
   EXPECT_EQ(temp_dst1, temp_src);
 
   // Case when destination is non-empty
-  ecpp::static_vector<int, Capacity> temp_dst2(1);
+  static_vector<TypeParam, Capacity> temp_dst2(1, TypeParam(0));
   EXPECT_EQ(temp_dst2.size(), 1);
 
   temp_dst2 = temp_src;

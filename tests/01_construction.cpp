@@ -1,120 +1,122 @@
 #include "ecpp/static_vector.hpp"
 #include "initializer_list_helper.hpp"
-
-#include <gtest/gtest.h>
-
+#include "test_types.hpp"
 #include <vector>
 
 using namespace ecpp::testing;
+using ecpp::static_vector;
 
-constexpr std::size_t Capacity{10};
-TEST(ecpp_static_vector, construction_default) {
-  ecpp::static_vector<int, Capacity> temp;
-  EXPECT_EQ(temp.max_size(), Capacity);
-  EXPECT_EQ(temp.capacity(), Capacity);
-  EXPECT_EQ(temp.size(), 0);
+constexpr std::size_t Capacity{10U};
+
+TYPED_TEST(StaticVector, construction_default) {
+  static_vector<TypeParam, Capacity> v;
+  EXPECT_EQ(v.max_size(), Capacity);
+  EXPECT_EQ(v.capacity(), Capacity);
+  EXPECT_EQ(v.size(), 0);
 }
 
-TEST(ecpp_static_vector, construction_with_count_copies) {
-  ecpp::static_vector<int, Capacity> temp(Capacity, -1);
-  EXPECT_EQ(temp.max_size(), Capacity);
-  EXPECT_EQ(temp.capacity(), Capacity);
-  EXPECT_EQ(temp.size(), Capacity);
+TYPED_TEST(StaticVector, construction_n_copies) {
+  static_vector<TypeParam, Capacity> v(Capacity, TypeParam(-1));
+  EXPECT_EQ(v.max_size(), Capacity);
+  EXPECT_EQ(v.capacity(), Capacity);
+  EXPECT_EQ(v.size(), Capacity);
 
-  for(auto i : temp) {
+  for(auto const &i : v) {
     EXPECT_EQ(i, -1);
   }
 
-  auto tryConstructInvalidVector = []() { ecpp::static_vector<int, Capacity> _(Capacity + 1, {42}); };
+  auto construct_invalid_element_count = []() { static_vector<TypeParam, Capacity> _(Capacity + 1, TypeParam(-1)); };
 #ifdef __cpp_exceptions
-  EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
+  EXPECT_THROW(construct_invalid_element_count(), std::length_error);
 #else
-  EXPECT_DEATH(tryConstructInvalidVector(), "");
+  EXPECT_DEATH(construct_invalid_element_count(), "");
 #endif
 }
 
-TEST(ecpp_static_vector, construction_with_count_default_inserted_instances) {
-  ecpp::static_vector<int, Capacity> temp(Capacity);
-  EXPECT_EQ(temp.max_size(), Capacity);
-  EXPECT_EQ(temp.capacity(), Capacity);
-  EXPECT_EQ(temp.size(), Capacity);
+TYPED_TEST(StaticVector, construction_n_default_inserted_instances) {
 
-  auto tryConstructInvalidVector = []() { ecpp::static_vector<int, Capacity> _(Capacity + 1); };
+  if constexpr(std::is_default_constructible_v<TypeParam>) {
+    static_vector<TypeParam, Capacity> v(Capacity);
+    EXPECT_EQ(v.max_size(), Capacity);
+    EXPECT_EQ(v.capacity(), Capacity);
+    EXPECT_EQ(v.size(), Capacity);
+    auto construct_invalid_element_count = []() { static_vector<TypeParam, Capacity> _(Capacity + 1); };
 #ifdef __cpp_exceptions
-  EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
+    EXPECT_THROW(construct_invalid_element_count(), std::length_error);
 #else
-  EXPECT_DEATH(tryConstructInvalidVector(), "");
+    EXPECT_DEATH(construct_invalid_element_count(), "");
 #endif
+  } else {
+    EXPECT_FALSE((std::is_constructible_v<static_vector<TypeParam, Capacity>, std::size_t>));
+  }
 }
 
-TEST(ecpp_static_vector, construction_from_range) {
-  auto iList = initializer_sequence<int, Capacity>()();
-  std::vector<int> temp_src(iList);
+TYPED_TEST(StaticVector, construction_from_range) {
+  static_vector<TypeParam, Capacity> src(Capacity, TypeParam(-1));
+  static_vector<TypeParam, Capacity> v(src.begin(), src.end());
 
-  ecpp::static_vector<int, Capacity> temp_dst(temp_src.begin(), temp_src.end());
+  EXPECT_EQ(v.max_size(), Capacity);
+  EXPECT_EQ(v.capacity(), Capacity);
+  EXPECT_EQ(v.size(), src.size());
 
-  EXPECT_EQ(temp_dst.max_size(), Capacity);
-  EXPECT_EQ(temp_dst.capacity(), Capacity);
-  EXPECT_EQ(temp_dst.size(), temp_src.size());
+  EXPECT_TRUE(std::equal(src.begin(), src.end(), v.begin(), v.end()));
 
-  EXPECT_TRUE(std::equal(temp_src.begin(), temp_src.end(), temp_dst.begin(), temp_dst.end()));
-
-  auto tryConstructInvalidVector = []() {
-    auto iListTooBig = initializer_sequence<int, Capacity + 1>()();
-    std::vector<int> temp_src(iListTooBig);
-    ecpp::static_vector<int, Capacity> _(temp_src.begin(), temp_src.end());
+  auto construct_from_too_big_range = []() {
+    static_vector<TypeParam, Capacity + 1> too_big(Capacity + 1, TypeParam(-1));
+    static_vector<TypeParam, Capacity> _(too_big.begin(), too_big.end());
   };
 #ifdef __cpp_exceptions
-  EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
+  EXPECT_THROW(construct_from_too_big_range(), std::length_error);
 #else
-  EXPECT_DEATH(tryConstructInvalidVector(), "");
+  EXPECT_DEATH(construct_from_too_big_range(), "");
 #endif
 }
 
-TEST(ecpp_static_vector, construction_copy) {
-  ecpp::static_vector<int, Capacity> temp_src(Capacity, -1);
+TYPED_TEST(StaticVector, construction_copy) {
+  static_vector<TypeParam, Capacity> src(Capacity, TypeParam(-1));
+  static_vector<TypeParam, Capacity> dst(src);
 
-  ecpp::static_vector<int, Capacity> temp_dst(temp_src);
+  EXPECT_EQ(dst.max_size(), src.max_size());
+  EXPECT_EQ(dst.capacity(), src.capacity());
+  EXPECT_EQ(dst.size(), src.size());
 
-  EXPECT_EQ(temp_dst.max_size(), temp_src.max_size());
-  EXPECT_EQ(temp_dst.capacity(), temp_src.capacity());
-  EXPECT_EQ(temp_dst.size(), temp_src.size());
-
-  EXPECT_EQ(temp_src, temp_dst);
+  EXPECT_EQ(src, dst);
 }
 
-TEST(ecpp_static_vector, construction_move) {
-  ecpp::static_vector<int, Capacity> temp_src(Capacity, -1);
-  ecpp::static_vector<int, Capacity> temp_dst(std::move(temp_src));
+TYPED_TEST(StaticVector, construction_move) {
+  static_vector<TypeParam, Capacity> src(Capacity, TypeParam(-1));
+  // will fallback to copy if move is not allowed
+  static_vector<TypeParam, Capacity> dst(std::move(src));
 
-  EXPECT_EQ(temp_dst.max_size(), temp_src.max_size());
-  EXPECT_EQ(temp_dst.capacity(), temp_src.capacity());
-  EXPECT_EQ(temp_dst.size(), temp_src.size());
+  EXPECT_EQ(dst.max_size(), Capacity);
+  EXPECT_EQ(dst.capacity(), Capacity);
+  EXPECT_EQ(dst.size(), Capacity);
 
-  for(auto i : temp_dst) {
-    EXPECT_EQ(i, -1);
+  for(auto const &i : dst) {
+    EXPECT_EQ(i, TypeParam(-1));
   }
-
-  // The equality of elements of both vectors MAY not be met when elements are not trivial
 }
 
-// TEST(ecpp_static_vector, construction_from_initializer_list) {
-//     auto iList = initializer_sequence<int, Capacity>()();
+TYPED_TEST(StaticVector, construction_from_initializer_list) {
+  auto iList = std::initializer_list<TypeParam>{TypeParam(-1), TypeParam(0), TypeParam(1), TypeParam(2), TypeParam(3),
+                                                TypeParam(4),  TypeParam(5), TypeParam(6), TypeParam(7), TypeParam(8)};
+  if(Capacity < iList.size()) {
+    GTEST_SKIP();
+  }
+  static_vector<TypeParam, Capacity> v(iList);
+  EXPECT_EQ(v.max_size(), Capacity);
+  EXPECT_EQ(v.capacity(), Capacity);
+  EXPECT_EQ(v.size(), Capacity);
 
-//     ecpp::static_vector<int, Capacity> temp(iList);
-//     EXPECT_EQ(temp.max_size(), Capacity);
-//     EXPECT_EQ(temp.capacity(), Capacity);
-//     EXPECT_EQ(temp.size(), Capacity);
+  EXPECT_TRUE(std::equal(v.begin(), v.end(), iList.begin(), iList.end()));
 
-//     EXPECT_TRUE(std::equal(temp.begin(), temp.end(), iList.begin(), iList.end()));
-
-//     auto tryConstructInvalidVector = []() {
-//         auto                               iListTooBig = initializer_sequence<int, Capacity + 1>()();
-//         ecpp::static_vector<int, Capacity> _(iListTooBig);
-//     };
-// #ifdef __cpp_exceptions
-//     EXPECT_THROW(tryConstructInvalidVector(), std::length_error);
-// #else
-//     EXPECT_DEATH(tryConstructInvalidVector(), "");
-// #endif
-// }
+  auto construct_from_too_large_ilist = []() {
+    auto iListTooBig = initializer_sequence<TypeParam, Capacity + 1>()();
+    static_vector<TypeParam, Capacity> _(iListTooBig);
+  };
+#ifdef __cpp_exceptions
+  EXPECT_THROW(construct_from_too_large_ilist(), std::length_error);
+#else
+  EXPECT_DEATH(construct_from_too_large_ilist(), "");
+#endif
+}

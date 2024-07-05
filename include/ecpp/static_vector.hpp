@@ -443,8 +443,7 @@ public:
    * @brief Requests the removal of unused capacity.
    * Because the static_vector uses static storage this method does nothing
    */
-  constexpr void shrink_to_fit() noexcept { /* Do nothing, as the underlying storage cannot be shrinked */
-  }
+  constexpr void shrink_to_fit() noexcept { /* Do nothing, as the underlying storage cannot be shrinked */ }
 
   /**
    * @brief Erases all elements from the container. After this call, size() returns zero.
@@ -621,7 +620,7 @@ public:
     auto index = std::distance(cbegin(), pos);
     std::move(begin() + index + 1, end(), begin() + index);
     // Elements were moved left, now destroy the last element
-    currentSize--;
+    --currentSize;
     // Now, end() points to previous last element
     std::destroy_at(end());
     return begin() + index;

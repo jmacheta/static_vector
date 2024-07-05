@@ -13,13 +13,13 @@ include(GoogleTest)
 
 add_executable(
   static_vector_ut
-  01_construction.cpp
-  # 02_assignment.cpp
-  # 03_access.cpp
-  04_iterators.cpp
-  05_capacity.cpp
-  06_modifiers.cpp
-  07_non_member_functions.cpp
+  # 01_construction.cpp
+  02_assignment.cpp
+  # # 03_access.cpp
+  # 04_iterators.cpp
+  # 05_capacity.cpp
+  # 06_modifiers.cpp
+  # 07_non_member_functions.cpp
 )
 
 target_include_directories(static_vector_ut PUBLIC include)

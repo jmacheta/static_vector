@@ -3,11 +3,13 @@
 
 namespace ecpp::testing {
 
-template <class T, std::size_t N> struct initializer_sequence {
+template <class T, std::size_t N> class initializer_sequence {
   std::initializer_list<T> value;
-  template <T... Values> constexpr initializer_sequence(std::integer_sequence<T, Values...>) : value{Values...} {};
-  constexpr initializer_sequence() : initializer_sequence(std::make_integer_sequence<T, N>{}){};
-  std::initializer_list<T> operator()() { return value; }
+  template <std::size_t... Args> constexpr initializer_sequence(std::index_sequence<Args...>) : value{T(Args)...} {};
+
+public:
+  constexpr initializer_sequence() : initializer_sequence(std::make_index_sequence<N>{}){};
+  constexpr auto &operator()() const { return value; }
 };
 
 } // namespace ecpp::testing
