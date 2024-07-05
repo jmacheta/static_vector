@@ -4,6 +4,8 @@ This package provides single-header C++20 library that defines container with st
 
 [![Build status](https://github.com/jmacheta/static_vector/actions/workflows/cpp_unit_tests.yml/badge.svg)](https://github.com/jmacheta/static_vector/actions/workflows/cpp_unit_tests.yml)
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/040c9648f23a4bfaa0a2a80a18ceefe5)](https://app.codacy.com/gh/jmacheta/static_vector/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 ## Installation
 
 The easiest way is to use built-in CMake FetchContent:
