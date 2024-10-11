@@ -1,10 +1,9 @@
-name: Unit Tests
+name: On Push
 
 on:
   push:
-      branches: [ main ]
-  pull_request:
-      branches: [ main ]
+
+  workflow_dispatch:
 
 jobs:
   build_and_test:
